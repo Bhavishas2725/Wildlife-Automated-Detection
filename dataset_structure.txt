@@ -1,0 +1,29 @@
+Dataset structure:
+
+ ├── bear/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── deer/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── donkey/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── giraffe/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── horse/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── lion/
+│    ├── lion1.jpg
+│    ├── lion2.jpg
+├── monkey/
+│    ├── image1.jpg
+│    ├── image2.jpg
+├── tiger/
+│    ├── image1.jpg
+│    ├── image2.jpg
+└── unknown/
+     ├── image1.jpg
+     ├── image2.jpg

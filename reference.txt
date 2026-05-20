@@ -1,0 +1,200 @@
+# Install all libraries
+
+pip install numpy pandas matplotlib tensorflow ultralytics opencv-python
+
+
+# Animals:
+#    bear
+#    deer
+#    donkey
+#    giraffe
+#    horse
+#    lion
+#    monkey
+#    tiger
+#    unknown
+
+
+
+
+# Animal Classification and Storage Bootcamp
+
+# main.py
+import step1_environment_setup
+import step2_data_collection
+import step3_model_training
+import step4_generate_kdd
+import step5_evaluate_model
+import step6_real_time_detection
+import step7_image_classification
+
+print("Tiger Detection Bootcamp - Execution Completed")
+
+
+# step1_environment_setup.py
+import os
+import cv2
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from ultralytics import YOLO
+
+
+# step2_data_collection.py
+def preprocess_image(image_path):
+    if not os.path.exists(image_path):
+        print(f"Image not found: {image_path}")
+        return [image_path, None, None, None, 0, 0, 0]
+
+    from PIL import Image
+    with Image.open(image_path) as img:
+        if img.mode == 'P' or img.mode == 'LA':
+            print(f"Converting transparent image to RGBA: {image_path}")
+            img = img.convert('RGBA')
+            image = np.array(img)
+        else:
+            image = cv2.imread(image_path)
+
+    if image is None:
+        print(f"Failed to load image: {image_path}")
+        return [image_path, None, None, None, 0, 0, 0]
+
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(image, (5, 5), 0)
+    edges = cv2.Canny(gray, 50, 150)
+
+    area = np.count_nonzero(edges)
+    height, width = image.shape[:2]
+
+    processed_folder = image_path.replace("K:/Internship/tiger_detection/dataset", "K:/Internship/tiger_detection/processed_dataset")
+    os.makedirs(os.path.dirname(processed_folder), exist_ok=True)
+
+    cv2.imwrite(processed_folder.replace(".jpg", "_gray.jpg"), gray)
+    cv2.imwrite(processed_folder.replace(".jpg", "_blurred.jpg"), blurred)
+    cv2.imwrite(processed_folder.replace(".jpg", "_edges.jpg"), edges)
+
+    return [image_path, processed_folder.replace(".jpg", "_gray.jpg"), processed_folder.replace(".jpg", "_blurred.jpg"), processed_folder.replace(".jpg", "_edges.jpg"), area, width, height]
+
+train_datagen = ImageDataGenerator(
+    rescale=1.0/255,
+    rotation_range=30,
+    width_shift_range=0.2,
+    height_shift_range=0.2,
+    shear_range=0.2,
+    zoom_range=0.2,
+    horizontal_flip=True,
+    validation_split=0.2
+)
+
+train_generator = train_datagen.flow_from_directory(
+    'K:/Internship/tiger_detection/dataset/',
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='categorical',
+    subset='training'
+)
+
+validation_generator = train_datagen.flow_from_directory(
+    'K:/Internship/tiger_detection/dataset/',
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Export for reuse in other files
+__all__ = ['preprocess_image', 'train_generator', 'validation_generator']
+
+
+# step3_model_training.py
+from tensorflow import keras
+from tensorflow.keras import layers
+from step2_data_collection import train_generator, validation_generator
+
+num_classes = len(train_generator.class_indices)
+
+model = keras.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(224, 224, 3)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Flatten(),
+    layers.Dense(256, activation='relu'),
+    layers.Dense(num_classes, activation='softmax')
+])
+
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.fit(train_generator, validation_data=validation_generator, epochs=10)
+
+model.save('animal_classification_model.h5')
+print("Model saved as 'animal_classification_model.h5'")
+
+
+# step4_generate_kdd.py
+from step2_data_collection import train_generator, preprocess_image
+import time
+
+kdd_data = []
+for animal, index in train_generator.class_indices.items():
+    animal_folder = f'K:/Internship/tiger_detection/dataset/{animal}'
+    for img in os.listdir(animal_folder):
+        img_path = os.path.join(animal_folder, img)
+
+        if os.path.isfile(img_path):
+            processed_images = preprocess_image(img_path)
+            current_time = time.strftime("%Y-%m-%d %H:%M:%S")
+            kdd_data.append([img_path, animal, current_time] + processed_images)
+
+kdd_df = pd.DataFrame(kdd_data, columns=['original_image', 'label', 'datetime', 'gray_image', 'blurred_image', 'edge_image', 'area', 'width', 'height'])
+kdd_df.to_csv('kdd_dataset.csv', index=False)
+print("KDD dataset saved as 'kdd_dataset.csv'")
+
+
+# step5_evaluate_model.py
+from step2_data_collection import validation_generator
+from tensorflow.keras.models import load_model
+
+model = load_model('animal_classification_model.h5')
+
+loss, accuracy = model.evaluate(validation_generator)
+print(f'Validation Accuracy: {accuracy * 100:.2f}%')
+
+model.summary()
+
+
+# step6_real_time_detection.py
+from step2_data_collection import train_generator
+
+model_yolo = YOLO('yolov8n.pt')
+
+cap = cv2.VideoCapture(0)
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    results = model_yolo(frame)
+    annotated_frame = results.plot()
+
+    cv2.imshow('Animal Detection', annotated_frame)
+
+    animal_type = input("Enter detected animal (lion, tiger, monkey, horse, donkey, deer, bear, giraffe): ").strip().lower()
+
+    if animal_type in train_generator.class_indices:
+        save_path = f'K:/Internship/tiger_detection/dataset/{animal_type}/'
+        os.makedirs(save_path, exist_ok=True)
+        filename = os.path.join(save_path, f"{animal_type}_{len(os.listdir(save_path)) + 1}.jpg")
+        cv2.imwrite(filename, frame)
+        print(f"Image saved to: {filename}")
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()

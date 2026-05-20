@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.h5
+*.zip
+*.csv
+.idea/
+*.pt
+Images/
+processed_dataset/

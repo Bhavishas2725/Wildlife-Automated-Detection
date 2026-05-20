@@ -1,0 +1,3 @@
+# Install all libraries
+
+pip install numpy pandas matplotlib tensorflow ultralytics opencv-python
