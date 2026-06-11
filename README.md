@@ -10,9 +10,9 @@
 
 ---
 
-## 📌 Demo
+##  Demo
 
-> 📸 _Add your detection output screenshot here_
+> 
 > 
 > ![Detection Demo](results/detection_output.png)
 > 
@@ -36,11 +36,11 @@ Built as part of a research internship at the **Department of Computer Science, 
 
 | # | Class | # | Class |
 |---|-------|---|-------|
-| 1 | 🐻 Bear | 6 | 🦁 Lion |
-| 2 | 🦌 Deer | 7 | 🐒 Monkey |
-| 3 | 🫏 Donkey | 8 | 🐯 Tiger |
-| 4 | 🦒 Giraffe | 9 | ❓ Unknown |
-| 5 | 🐴 Horse | | |
+| 1 |  Bear | 6 |  Lion |
+| 2 |  Deer | 7 |  Monkey |
+| 3 |  Donkey | 8 |  Tiger |
+| 4 |  Giraffe | 9 |  Elepant |
+| 5 |  Horse | | |
 
 ---
 
