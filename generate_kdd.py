@@ -6,7 +6,7 @@ import pandas as pd
 
 kdd_data = []
 for animal, index in train_generator.class_indices.items():
-    animal_folder = f'K:/Internship/tiger_detection/dataset/animals/{animal}'
+    animal_folder = fr"C:\Users\bhavi\Documents\INTERN\animal_detection\dataset\animals/{animal}"
     for img in os.listdir(animal_folder):
         img_path = os.path.join(animal_folder, img)
 

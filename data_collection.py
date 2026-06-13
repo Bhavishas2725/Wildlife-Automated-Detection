@@ -31,7 +31,7 @@ def preprocess_image(image_path):
     area = np.count_nonzero(edges)
     height, width = image.shape[:2]
 
-    processed_folder = image_path.replace("K:/Internship/tiger_detection/dataset", "K:/Internship/tiger_detection/processed_dataset")
+    processed_folder = image_path.replace(r"C:\Users\bhavi\Documents\INTERN\animal_detection\dataset\animals", r"C:\Users\bhavi\Documents\INTERN\animal_detection\processed_dataset")
     os.makedirs(os.path.dirname(processed_folder), exist_ok=True)
 
     cv2.imwrite(processed_folder.replace(".jpg", "_gray.jpg"), gray)
@@ -52,7 +52,7 @@ train_datagen = ImageDataGenerator(
 )
 
 train_generator = train_datagen.flow_from_directory(
-    'K:/Internship/tiger_detection/dataset/animals',
+    r"C:\Users\bhavi\Documents\INTERN\animal_detection\dataset\animals",
     target_size=(224, 224),
     batch_size=32,
     class_mode='categorical',
@@ -60,7 +60,7 @@ train_generator = train_datagen.flow_from_directory(
 )
 
 validation_generator = train_datagen.flow_from_directory(
-    'K:/Internship/tiger_detection/dataset/animals',
+    r"C:\Users\bhavi\Documents\INTERN\animal_detection\dataset\animals",
     target_size=(224, 224),
     batch_size=32,
     class_mode='categorical',

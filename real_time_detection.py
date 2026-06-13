@@ -23,7 +23,7 @@ for img_name in os.listdir(folder_path):
         animal_type = input("Enter detected animal: ").strip().lower()
 
         if animal_type in train_generator.class_indices:
-            save_path = f'K:/Internship/tiger_detection/dataset/animals/{animal_type}/'
+            save_path = fr'C:\Users\bhavi\Documents\INTERN\animal_detection\dataset\{animal_type}/'
             os.makedirs(save_path, exist_ok=True)
             filename = os.path.join(save_path, f"{animal_type}_{len(os.listdir(save_path)) + 1}.jpg")
             cv2.imwrite(filename, frame)
