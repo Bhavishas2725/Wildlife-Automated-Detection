@@ -69,7 +69,6 @@ history2 = model.fit(
     callbacks=[early_stop, reduce_lr]
 )
 
-
 model.save('animal_classification_model.h5')
 print("Model saved as 'animal_classification_model.h5'")
 
