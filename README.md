@@ -12,8 +12,6 @@
 
 ## Demo
 
-![Detection Demo](results/detection_output.png)
-
 ![Demo GIF](results/demo.gif)
 
 ---
@@ -63,6 +61,7 @@ Built as part of a research internship at the **Department of Computer Science, 
 
 ![Final Accuracy & Model Summary](results/final_accuracy.png)
 ![Classification Output](results/classification_output.png)
+![Detection Output](results/detection_output.png)
 
 ---
 
